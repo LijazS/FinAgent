@@ -20,7 +20,7 @@ const handleLogin = async (e) => {
   e.preventDefault();
 
   try {
-    const resp = await axios.post(`${import.meta.env.VITE_API_URL}/Login`, formData, {
+    const resp = await axios.post(`${import.meta.env.VITE_API_URL}/login`, formData, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -33,16 +33,16 @@ const handleLogin = async (e) => {
     localStorage.setItem("userName", data.name);
     localStorage.setItem("token", data.token);
 
-    navigate("/");
+    navigate("/dashboard");
 
   } catch (error) {
     // Axios errors are in error.response
     if (error.response) {
       console.error("Login failed:", error.response.data);
-      alert("Login failed: " + error.response.data.message);
+      alert("Login failed: " + error.response.data.detail);
     } else {
-      console.error("Error occurred during login:", error.message);
-      alert("Login failed: " + error.message);
+      console.error("Error occurred during login:", error.detail);
+      alert("Login failed: " + error.detail);
     }
   }
 };

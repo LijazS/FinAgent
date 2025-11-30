@@ -9,7 +9,7 @@ from typing import Optional, List
 from database import get_db
 import models
 import schemas
-from auth import get_password_hash
+from auth import get_password_hash, verify_password
 from database import engine, Base
 
 app = FastAPI()
@@ -37,6 +37,9 @@ async def root():
     return {"message": "Hello from FastAPI"}
 
 
+
+############################ USER REGISTRATION ###############################
+
 @app.post("/signup", response_model=schemas.UserResponse)
 async def signup(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     print(user)
@@ -63,6 +66,26 @@ async def signup(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     await db.refresh(new_user)
 
     return new_user
+
+#############################  END USER REGISTRATION  ###############################
+
+@app.post("/login", response_model=schemas.LoginResponse)
+async def login(user: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
+    stmt = select(models.User).where(models.User.email == user.email)
+    result = await db.execute(stmt)
+    existing_user = result.scalar_one_or_none()
+
+    if not existing_user:
+        raise HTTPException(status_code=400, detail="Email doesnt exist, Please sign up")
+    
+    if not verify_password(user.password, existing_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    
+    return {
+        "id": str(existing_user.id),
+        "email": existing_user.email,
+        "token": None  # Placeholder for JWT or other token
+    }
 
 
 

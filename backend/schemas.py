@@ -12,3 +12,17 @@ class UserResponse(BaseModel):
 
     class Config:
         orm_mode = True  # <-- must be orm_mode, not from_attributes
+
+# --- LOGIN ---------
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class LoginResponse(BaseModel):
+    id: str           # UUID as string
+    email: EmailStr
+    # optionally add token if using JWT
+    token: str | None = None
+
+    class Config:
+        orm_mode = True

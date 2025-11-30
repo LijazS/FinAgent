@@ -38,15 +38,15 @@ const handleSubmit = async (e) => {
        localStorage.setItem("userEmail", formData.email);
        localStorage.setItem("userName", formData.name);
       //  localStorage.setItem("token", data.token);
-      //  navigate("/");
+       navigate("/");
 
     } catch (error) {
        if (error.response) {
       console.error("Login failed:", error.response.data);
-      alert("Login failed: " + error.response.data.message);
+      alert("Login failed: " + error.response.data.detail);
     } else {
-      console.error("Error occurred during login:", error.message);
-      alert("Login failed: " + error.message);
+      console.error("Error occurred during login:", error.detail);
+      alert("Login failed: " + error.detail);
     }
     }
   };
