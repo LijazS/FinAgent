@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: UUID           # match the UUID from the DB
     email: EmailStr
+    token: str | None = None
 
     class Config:
         orm_mode = True  # <-- must be orm_mode, not from_attributes

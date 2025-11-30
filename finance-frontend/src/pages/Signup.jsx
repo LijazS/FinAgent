@@ -36,9 +36,8 @@ const handleSubmit = async (e) => {
 
 
        localStorage.setItem("userEmail", formData.email);
-       localStorage.setItem("userName", formData.name);
-      //  localStorage.setItem("token", data.token);
-       navigate("/");
+       localStorage.setItem("token", data.token);
+       navigate("/dashboard");
 
     } catch (error) {
        if (error.response) {

@@ -30,7 +30,6 @@ const handleLogin = async (e) => {
     // Handle successful login
     console.log("Login successful:", data);
     localStorage.setItem("userEmail", formData.email);
-    localStorage.setItem("userName", data.name);
     localStorage.setItem("token", data.token);
 
     navigate("/dashboard");

@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+import os
+from dotenv import load_dotenv
 
 from pydantic import BaseModel
 from typing import Optional, List
@@ -11,8 +13,12 @@ import models
 import schemas
 from auth import get_password_hash, verify_password
 from database import engine, Base
+from auth import create_access_token
 
-app = FastAPI()
+load_dotenv()
+
+app = FastAPI() 
+secret_key = os.getenv("SECRET_KEY")
 
 origins = [
     "http://localhost:5173",  # Vite's default port
@@ -65,9 +71,18 @@ async def signup(user: schemas.UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(new_user)
 
-    return new_user
+    token = create_access_token(data={"sub": str(new_user.email)}, secret_key=secret_key)
+
+    return {
+        "id": str(new_user.id),
+        "email": new_user.email,
+        "token": token  # Placeholder for JWT or other token
+    }
+
 
 #############################  END USER REGISTRATION  ###############################
+
+############################ USER LOGIN ###############################
 
 @app.post("/login", response_model=schemas.LoginResponse)
 async def login(user: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
@@ -81,12 +96,15 @@ async def login(user: schemas.UserLogin, db: AsyncSession = Depends(get_db)):
     if not verify_password(user.password, existing_user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect password")
     
+    token = create_access_token(data={"sub": str(existing_user.email)}, secret_key=secret_key)
+    
     return {
         "id": str(existing_user.id),
         "email": existing_user.email,
-        "token": None  # Placeholder for JWT or other token
+        "token": token  # Placeholder for JWT or other token
     }
 
+#############################  END USER LOGIN  ###############################
 
 
 
